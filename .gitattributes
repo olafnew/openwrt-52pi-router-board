@@ -1,0 +1,21 @@
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.gz binary
+*.zip binary
+*.bz2 binary
+*.xz binary
+*.img binary
+*.bin binary
+*.iso binary
+*.ova binary
+*.pcap binary
+*.pcapng binary
