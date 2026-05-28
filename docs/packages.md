@@ -93,9 +93,10 @@ docs/realtek-driver.md
 
 Current decision:
 
-- use `kmod-r8168-rss`
+- use `kmod-r8168-rss` for the first parity build
 - backport/update OpenWrt's official r8168 package to `8.056.02`
 - do not preserve the old custom package name `kmod-r8168-8.056.02-rss`
+- do not advertise RSS as functional on this board; the current router exposes one RX queue and one TX queue
 
 ## Rule For Optional Packages
 

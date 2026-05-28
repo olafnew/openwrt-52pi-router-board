@@ -7,10 +7,40 @@ Verified on 2026-05-28.
 The running router loads:
 
 ```text
-r8168
+r8168 8.056.02-RSS
+```
+
+The current installed package is:
+
+```text
+kmod-r8168-8.056.02-rss
 ```
 
 `ethtool` is not installed on the production router, so detailed driver/link metadata cannot currently be queried there. This is one of the reasons `ethtool` is included in `profiles/common-extra-tools.packages.txt`.
+
+## RSS Runtime Audit
+
+The production router confirms that the `-RSS` build does not mean RSS is actually active on this board.
+
+Observed on 2026-05-28:
+
+```text
+driver version      8.056.02-RSS
+chipset             RTL8168E/8111E
+eth1 RX queues      1
+eth1 TX queues      1
+eth1 MSI IRQs       1
+/proc interrupt     eth1-0 only
+HwSuppNumTxQueues   0x1
+HwSuppNumRxQueues   0x1
+num_rx_rings        0x1
+num_tx_rings        0x1
+EnableRss           0x0
+```
+
+Conclusion: RSS is compiled into the module, but the detected Realtek chip exposes only one RX queue and one TX queue. Functional RSS is not available on the current board.
+
+This matches the Realtek driver source: it only sets 4 RX queues for selected newer hardware methods. Other chip revisions fall back to one RX queue and one TX queue. The current router reports `RTL8168E/8111E`, which is in the fallback behavior.
 
 ## OpenWrt 25.12.4 Baseline
 
@@ -65,16 +95,20 @@ Instead, use the official OpenWrt package shape and backport/update it to `8.056
 kmod-r8168-rss
 ```
 
-This is a deliberate package-name deviation from the current production router. It preserves the actual technical behavior we care about:
+This is a deliberate package-name deviation from the current production router. It preserves the production-tested driver build while dropping the custom package name.
 
-- Realtek vendor r8168 driver.
-- Version `8.056.02`.
-- RSS enabled.
-- multiple TX queues enabled.
+Important: do not describe RSS as a working board feature. On this hardware, the expected runtime behavior is still one RX queue and one TX queue.
+
+The first spare-board build should use `kmod-r8168-rss` for production parity. After the board boots and `ethtool` is available, test both facts:
+
+- driver version is `8.056.02`
+- runtime queue count remains stable
+- no regressions compared with production
+
+If the regular `kmod-r8168` build behaves the same or better during spare-board testing, we can switch to it later. There is no evidence that this board gains throughput from the RSS variant.
 
 The change should be validated on the spare board before production use.
 
 ## r8125
 
 OpenWrt `25.12.4` already has `r8125 9.016.01`, and the OpenWrt `rtl8125` release repository also shows `9.016.01` as latest. The current board is using r8168, so r8125 is not part of the first target unless a later board revision or CM5 carrier test shows a 2.5G Realtek NIC.
-
