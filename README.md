@@ -9,11 +9,32 @@ This repository is intended to make a reproducible, documented, modern firmware 
 | Goal | What this project provides |
 |---|---|
 | Stable base | Tracks the latest stable OpenWrt release, not random snapshots. |
-| Real router performance | 1000 Hz kernel timer target, BBR, packet steering, IRQ tuning, SQM/autorate readiness, and Realtek r8168 work. |
+| Real router performance | 1000 Hz kernel timer target, BBR, packet steering, IRQ tuning, SQM/autorate readiness, and honest Realtek r8168 driver policy. |
 | Working board features | OLED support for the board's SSD1306 display, including LuCI integration and boot-time I2C handling. |
 | Practical diagnostics | Includes tools that are normally missing during real troubleshooting: tcpdump, fping, dig, jq, ip-full/tc-full, conntrack, ethtool, iperf3, htop/btop, lsof, strace, and related helpers. |
 | Two firmware profiles | Performance-only firmware and a full AmneziaWG + Podkop firmware for censorship-bypass routing. |
 | Reproducible release process | Build scripts, patches, profile configs, source inventory, and hardware test checklist. |
+| Documented hardware limits | The board's Realtek RTL8168E/RTL8111E Ethernet path does not provide functional RSS/multi-queue acceleration. |
+
+## Important Realtek RSS Limitation
+
+This board should not be advertised as having working Realtek RSS acceleration.
+
+The current production router uses a Realtek `r8168 8.056.02-RSS` compiled driver, but the actual hardware exposes only one RX queue and one TX queue. That means traffic cannot be spread across CPU cores by RSS on this board revision.
+
+Observed on the running router:
+
+| Runtime item | Observed value |
+|---|---|
+| Ethernet chip | `RTL8168E/8111E` |
+| RX queues | `1` |
+| TX queues | `1` |
+| Interrupts | `eth1-0` only |
+| `EnableRss` | `0x0` |
+| `HwSuppNumRxQueues` | `0x1` |
+| `HwSuppNumTxQueues` | `0x1` |
+
+So this project will keep the Realtek driver work needed for stable Ethernet, but it will not claim RSS as a working performance feature unless a different board/NIC revision proves multiple hardware queues. See [docs/realtek-driver.md](docs/realtek-driver.md) for the full driver audit.
 
 ## Firmware Profiles
 
@@ -32,7 +53,7 @@ The old March build used `v25.12.0-rc5`; it remains archived as reference materi
 
 - 52Pi Router Board for Raspberry Pi Compute Module 4 / Compute Module 5
 - Broadcom BCM27xx family target in OpenWrt
-- Realtek RTL8111/RTL8168 external Ethernet path
+- Realtek RTL8111/RTL8168 external Ethernet path; current RTL8168E/RTL8111E boards expose one RX/TX queue, so RSS is a documented hardware limitation
 - SSD1306-compatible I2C OLED display
 - Optional PoE HAT / RTC investigation remains documented separately
 
