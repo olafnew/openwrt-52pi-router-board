@@ -46,3 +46,14 @@ The live router at `192.168.1.1` has changes that may not exist in the March scr
 - installed custom packages and versions
 
 Do not export private keys, passwords, tokens, personal Podkop domain lists, or full VPN configs into git.
+
+## Current Router Snapshot
+
+Latest captured redacted snapshot:
+
+`_reference-current-router/20260528-030422`
+
+Publishable summary documents:
+
+- `docs/current-router-state.md`
+- `docs/march-rc5-reconciliation.md`

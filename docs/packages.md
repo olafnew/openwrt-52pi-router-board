@@ -47,3 +47,16 @@ Full VPN profile includes all performance packages plus:
 ## Rule For Optional Packages
 
 Prefer packages that materially help maintainability, diagnostics, or board functionality. Avoid turning the image into a general-purpose Linux distribution.
+
+## Current Router Package Delta
+
+The 2026-05-28 production-router snapshot has four packages beyond the March rc5 manifest:
+
+- `bash`
+- `fping`
+- `libpcap1`
+- `tcpdump`
+
+The new build should include these intentionally. `fping` is required by the current autorate/health workflow, and `tcpdump`/`libpcap1` are essential diagnostics.
+
+The current router still uses `ip-tiny` and `tc-tiny`; the target build should prefer `ip-full` and `tc-full` if image size remains acceptable.
