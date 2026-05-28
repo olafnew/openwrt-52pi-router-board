@@ -52,7 +52,7 @@ No MAC-based DHCP reservation is required for the first test plan. If later we w
 Minimum first-pass reproduction list:
 
 - 128 MiB boot partition and 2048 MiB root partition.
-- Realtek r8168 driver package.
+- Realtek r8168 RSS driver package, using official OpenWrt package naming with r8168 `8.056.02`.
 - 1000 Hz kernel tick.
 - boot config: I2C enabled, 1.8 GHz overclock, low GPU memory, no audio.
 - OLED package, LuCI integration, init scripts, health/restart behavior.

@@ -9,6 +9,12 @@ Planned profiles:
 
 The first build run should produce both profiles.
 
+## Common Extra Tools
+
+`common-extra-tools.packages.txt` is mandatory for both profiles.
+
+It intentionally includes tools that are missing from the current production router but were repeatedly needed during troubleshooting. The live-router package list remains a baseline snapshot, not a ceiling.
+
 ## Production Package Source
 
 `full-vpn-podkop.production-packages.txt` is the package-name list captured from the running production router on 2026-05-28.
