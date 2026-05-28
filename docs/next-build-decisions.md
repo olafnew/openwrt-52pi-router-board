@@ -2,14 +2,28 @@
 
 Before the first real firmware image, these decisions should be explicit.
 
-## First Image To Build
+## First Images To Build
 
-Recommended order:
+First build run should produce both supported images:
 
 1. Performance profile.
 2. Full VPN profile with AmneziaWG and Podkop.
 
-Reason: the performance image validates board support, Realtek Ethernet, OLED, kernel tick rate, partitioning, LuCI, diagnostics, SQM, and base services before adding the more fragile censorship-bypass stack.
+Reason: the performance image validates board support, Realtek Ethernet, OLED, kernel tick rate, partitioning, LuCI, diagnostics, SQM, and base services. The Full VPN/Podkop image then proves that the production censorship-bypass stack can be reproduced from the same build.
+
+The Full VPN/Podkop image must closely mimic the installed package set on the running production router. The source package-name list is:
+
+```text
+profiles/full-vpn-podkop.production-packages.txt
+```
+
+That list is copied from the production-router snapshot:
+
+```text
+_reference-current-router/20260528-030422/packages/installed-package-names.txt
+```
+
+When converting it into OpenWrt `.config` selections, dependencies may be supplied automatically by the build system, and some package names may need adjustment if OpenWrt `25.12.4` renamed or replaced them. Any deviation from the live package list must be documented.
 
 ## First Hardware Target
 
@@ -23,15 +37,15 @@ This matches the current working CM4 router. CM5 support should be treated as a 
 
 ## Spare Board Network Plan
 
-For first flash testing, use a temporary static DHCP reservation on the production router. The test board should not take `192.168.1.1`.
+For first flash testing, use a known-free temporary static address. The test board must not take `192.168.1.1`.
 
 Proposed temporary address:
 
 ```text
-192.168.1.250
+192.168.1.254
 ```
 
-The exact MAC address must be taken from the spare board before creating the reservation.
+No MAC-based DHCP reservation is required for the first test plan. If later we want deterministic DHCP instead of a static test address, capture the spare board MAC after first boot.
 
 ## Features To Reproduce First
 
@@ -46,12 +60,10 @@ Minimum first-pass reproduction list:
 - Chrony enabled, sysntpd disabled.
 - SQM and cake-autorate support.
 - diagnostic packages listed in `docs/packages.md`.
+- Full VPN/Podkop profile package source matching `profiles/full-vpn-podkop.production-packages.txt`.
 - IPv6-disabled policy matching the current build.
 
 ## Still Needed From User
 
-- Spare board MAC address once it is connected.
-- Confirmation that the first generated image should be the Performance profile.
 - Approval before deleting any generated legacy build directories from the VM.
-- Approval before flashing the spare board.
-
+- Approval before flashing the spare board. User will flash only after the first firmware images are built.
