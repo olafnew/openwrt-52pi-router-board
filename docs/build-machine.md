@@ -56,18 +56,21 @@ Recommended model:
 | Path | Role |
 |---|---|
 | `/home/olafnew/openwrt-52pi-router-board` | NAS-backed source repo |
-| `/home/olafnew/openwrt` | legacy March rc5 OpenWrt tree, reference only |
-| future `/home/olafnew/build/openwrt-*` | disposable local build trees |
+| `/home/olafnew/openwrt-legacy-rc5` | symlink to archived March rc5 OpenWrt tree, reference only |
+| `/home/olafnew/build/src/openwrt-25.12.4` | clean local OpenWrt 25.12.4 source tree |
+| `/home/olafnew/build/cache/dl` | reusable OpenWrt download cache, symlinked as `dl/` in the clean tree |
+| `/home/olafnew/build/artifacts` | temporary local staging area for build outputs |
 | repo `releases/` or GitHub Releases | curated copied artifacts only |
 
 The local build tree is disposable. Build scripts must be reproducible from the NAS/GitHub repo.
 
 ## Current Legacy OpenWrt Tree
 
-Existing tree:
+Legacy tree:
 
 ```text
-/home/olafnew/openwrt
+/home/olafnew/build/legacy/openwrt-25.12.0-rc5-legacy-20260528
+/home/olafnew/openwrt-legacy-rc5 -> /home/olafnew/build/legacy/openwrt-25.12.0-rc5-legacy-20260528
 ```
 
 Observed state:
@@ -93,6 +96,37 @@ Size breakdown:
 
 Treat this as legacy reference material, not the baseline for new builds. The new build system should start from latest stable OpenWrt and reproduce required changes from documented patches/scripts.
 
+## Current Clean OpenWrt Tree
+
+Prepared on 2026-05-28:
+
+```text
+/home/olafnew/build/src/openwrt-25.12.4
+```
+
+Observed state:
+
+| Item | Value |
+|---|---|
+| OpenWrt tag | `v25.12.4` |
+| OpenWrt commit | `ba915c2` |
+| `packages` feed | `f91b06b` |
+| `luci` feed | `e9ebca75` |
+| `routing` feed | `b2097c8` |
+| `telephony` feed | `2618106` |
+| `video` feed | `094bf58` |
+
+Smoke test completed:
+
+```text
+CONFIG_TARGET_bcm27xx=y
+CONFIG_TARGET_bcm27xx_bcm2711=y
+CONFIG_TARGET_bcm27xx_bcm2711_DEVICE_rpi-4=y
+make defconfig
+```
+
+`make defconfig` completed successfully. The warnings seen during feed install/defconfig were generic missing optional feed dependency warnings, not target-blocking errors.
+
 ## Cleanup Performed
 
 On 2026-05-28:
@@ -106,21 +140,25 @@ On 2026-05-28:
   - `linux-image-6.12.69+deb13-amd64`
   - `linux-image-6.12.73+deb13-amd64`
 - cleaned apt cache
+- archived selected legacy build-machine state to:
+  - `/mnt/synology-development/Software/OpenWRT/_reference-build-machine/20260528-legacy-openwrt-rc5`
+- moved `/home/olafnew/openwrt` to the legacy path above
+- moved old feed/reference directories and helper scripts to:
+  - `/home/olafnew/build/legacy/supporting-refs-20260528`
+- left compatibility symlinks in `/home/olafnew` for the old feed/reference paths
+- installed missing Debian/OpenWrt build prerequisites from the current OpenWrt build-system guide
+- cloned OpenWrt `v25.12.4` into the clean source path
+- updated and installed OpenWrt release-pinned feeds
+- ran the BCM2711/RPi4 `make defconfig` smoke test
 
-No OpenWrt build tree files were deleted.
+No OpenWrt build tree files were deleted. The legacy tree was renamed/moved only.
 
 ## Remaining Cleanup Candidates
 
-These should not be deleted until they are either archived to NAS or proven redundant:
+These should not be deleted until the new firmware can reproduce the required behavior and the archived material has been reviewed:
 
-- `/home/olafnew/openwrt`
-- `/home/olafnew/amneziawg-feed`
-- `/home/olafnew/amneziawg-openwrt-ref`
-- `/home/olafnew/podkop-feed`
-- `/home/olafnew/podkop-feed-old`
-- `/home/olafnew/podkop-inspect`
-- `/home/olafnew/combined-diffconfig.bak`
-- `/home/olafnew/recreate_amneziawg_openwrt.sh`
-- `/home/olafnew/patch_amneziawg_js.py`
+- `/home/olafnew/build/legacy/openwrt-25.12.0-rc5-legacy-20260528/build_dir`
+- `/home/olafnew/build/legacy/openwrt-25.12.0-rc5-legacy-20260528/staging_dir`
+- `/home/olafnew/build/legacy/openwrt-25.12.0-rc5-legacy-20260528/tmp`
 
-Next cleanup step should be an archive/sync pass into the NAS reference area, then removal from the VM only after verification.
+These directories are large generated build outputs. They are useful while reconciling the March build, but should eventually be replaced by reproducible scripts plus curated release artifacts.

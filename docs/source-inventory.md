@@ -16,6 +16,7 @@ This is the maintained Git repository that should eventually be pushed to `githu
 |---|---|
 | `_reference-march-rc5-build/` | Old March build scripts, notes, driver tarball, and firmware manifest/images. |
 | `_reference-current-router/` | Reserved for redacted exports from the live router at `192.168.1.1`. |
+| `_reference-build-machine/` | Redacted/curated snapshots from the Debian build VM, including legacy build state and final images. |
 | `_archive-old-builds/` | Previous build attempts, rc4/snapshot/freezing variants, loose VirtualBoxShared leftovers. |
 | `_archive-large/` | Large VM images and build backups. Kept outside git. |
 | `_archive-unrelated/` | Files that were present in the old folder but do not belong in this firmware repo. |
@@ -57,3 +58,11 @@ Publishable summary documents:
 
 - `docs/current-router-state.md`
 - `docs/march-rc5-reconciliation.md`
+
+## Build Machine Snapshot
+
+Latest curated legacy VM snapshot:
+
+`_reference-build-machine/20260528-legacy-openwrt-rc5`
+
+Contents include the March rc5 OpenWrt `.config`, feed files, working-tree diffs, local feed copies, helper scripts, selected custom package sources, final build artifacts, and checksums. It intentionally excludes generated `build_dir`, `staging_dir`, and full `dl` cache bulk.

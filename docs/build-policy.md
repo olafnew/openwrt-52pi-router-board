@@ -25,8 +25,11 @@ The previous March firmware was based on `v25.12.0-rc5`. It is preserved as refe
 Builds are expected to run on the Debian VM build server:
 
 - SSH alias from Windows/Codex Desktop: `debian-vm`
-- OpenWrt build tree currently inspected at: `/home/olafnew/openwrt`
-- The existing tree is useful but stale; do not treat it as the only source of truth.
+- clean OpenWrt source tree: `/home/olafnew/build/src/openwrt-25.12.4`
+- legacy March rc5 tree: `/home/olafnew/openwrt-legacy-rc5`
+- NAS-backed project repo: `/home/olafnew/openwrt-52pi-router-board`
+
+The legacy tree is useful but stale; do not treat it as the build baseline. New images should be generated from the latest stable OpenWrt source plus this repo's documented patches, package selections, files overlay, and scripts.
 
 ## Version Rule
 
