@@ -1,0 +1,21 @@
+config pool
+	option hostname 'pool.ntp.org'
+	option maxpoll '10'
+	option maxsources '4'
+	option iburst '1'
+	option prefer '0'
+
+config dhcp_ntp_server 'dhcp_ntp_server'
+	option iburst '1'
+	option disabled '1'
+
+config allow 'allow'
+	option interface 'lan'
+
+config makestep 'makestep'
+	option threshold '1.0'
+	option limit '3'
+
+config nts 'nts'
+	option rtccheck '0'
+	option systemcerts '1'

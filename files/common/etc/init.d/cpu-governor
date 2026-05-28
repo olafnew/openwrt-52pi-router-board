@@ -1,0 +1,10 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+start() {
+	for cpu in /sys/devices/system/cpu/cpu[0-9]*; do
+		echo performance > "$cpu/cpufreq/scaling_governor" 2>/dev/null
+	done
+	logger -t cpu-governor "All CPUs set to performance governor"
+}

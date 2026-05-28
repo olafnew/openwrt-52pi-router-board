@@ -1,0 +1,22 @@
+################################################################################
+# Bootloader configuration - config.txt
+################################################################################
+# https://www.raspberrypi.com/documentation/computers/config_txt.html
+################################################################################
+
+# OpenWrt config
+include distroconfig.txt
+
+[all]
+# 52Pi CM4/CM5 Router Board defaults validated against the production router.
+dtoverlay=dwc2,dr_mode=host
+dtparam=i2c1=on
+dtparam=i2c_arm=on
+
+# Moderate overclock used by the current production router.
+arm_freq=1800
+over_voltage=4
+
+# Minimize GPU memory and disable audio for router use.
+gpu_mem=16
+dtoverlay=vc4-kms-v3d,noaudio

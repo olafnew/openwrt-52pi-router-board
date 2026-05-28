@@ -43,6 +43,15 @@ So this project will keep the Realtek driver work needed for stable Ethernet, bu
 | `performance` | Board support, OLED, Realtek/r8168, kernel/network tuning, SQM, diagnostics, and general router performance packages. |
 | `full-vpn` | Everything in `performance`, plus AmneziaWG, Podkop, sing-box, and the packages needed for policy routing / DPI bypass setups. |
 
+Build wrappers:
+
+```sh
+bash scripts/build-performance.sh
+bash scripts/build-full-vpn.sh
+```
+
+For the first spare-board test, these scripts default the LAN IP to `192.168.1.254` so the test board does not collide with an existing production router at `192.168.1.1`.
+
 ## Current Build Policy
 
 The public project tracks the latest stable OpenWrt series. As of 2026-05-28, the current stable OpenWrt release is `25.12.4`.
@@ -90,6 +99,6 @@ GitHub also supports repository funding links through `.github/FUNDING.yml`, but
 
 ## Repository Status
 
-Initial public repository structure is being prepared. Build scripts and patches will be added after the current production router state is exported and compared against the March reference build.
+Initial public repository structure is being prepared. Build scripts, profile fragments, board overlays, and source-tree patches are now present, but firmware should still be treated as pre-release until the first images are compiled and tested on the spare physical board.
 
 Do not flash anything from this repository until a tagged release explicitly says it was built and tested on the spare physical board.

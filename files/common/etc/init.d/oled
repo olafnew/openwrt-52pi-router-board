@@ -1,0 +1,65 @@
+#!/bin/sh /etc/rc.common
+
+START=100
+
+PROG=/usr/bin/oled
+
+start() {
+	enabled=$(uci -q get oled.@oled[0].enable || echo 0)
+	[ "$enabled" -eq 0 ] && exit 0
+
+	grep -q '/etc/init.d/oled restart' /etc/crontabs/root 2>/dev/null || \
+		echo '*/15 * * * * /etc/init.d/oled restart >/dev/null 2>&1' >> /etc/crontabs/root
+
+	date=$(uci -q get oled.@oled[0].date || echo 1)
+	lanip=$(uci -q get oled.@oled[0].lanip || echo 1)
+	cputemp=$(uci -q get oled.@oled[0].cputemp || echo 1)
+	cpufreq=$(uci -q get oled.@oled[0].cpufreq || echo 1)
+	netspeed=$(uci -q get oled.@oled[0].netspeed || echo 1)
+	time=$(uci -q get oled.@oled[0].time || echo 60)
+	drawline=$(uci -q get oled.@oled[0].drawline || echo 0)
+	drawrect=$(uci -q get oled.@oled[0].drawrect || echo 0)
+	fillrect=$(uci -q get oled.@oled[0].fillrect || echo 0)
+	drawcircle=$(uci -q get oled.@oled[0].drawcircle || echo 0)
+	drawroundrect=$(uci -q get oled.@oled[0].drawroundrect || echo 0)
+	fillroundrect=$(uci -q get oled.@oled[0].fillroundrect || echo 0)
+	drawtriangle=$(uci -q get oled.@oled[0].drawtriangle || echo 0)
+	filltriangle=$(uci -q get oled.@oled[0].filltriangle || echo 0)
+	displaybitmap=$(uci -q get oled.@oled[0].displaybitmap || echo 0)
+	displayinvertnormal=$(uci -q get oled.@oled[0].displayinvertnormal || echo 0)
+	drawbitmapeg=$(uci -q get oled.@oled[0].drawbitmapeg || echo 0)
+	scroll=$(uci -q get oled.@oled[0].scroll || echo 0)
+	text=$(uci -q get oled.@oled[0].text || echo '')
+	netsource=$(uci -q get oled.@oled[0].netsource || echo eth1)
+
+	if [ "$netspeed" -eq 1 ]; then
+		nohup /usr/sbin/netspeed "$netsource" >/dev/null 2>&1 &
+	else
+		pgrep -f '/usr/sbin/netspeed' | xargs -r kill -9
+		rm -f /tmp/netspeed
+	fi
+
+	nohup "$PROG" "$date" "$lanip" "$cputemp" "$cpufreq" "$netspeed" "$time" \
+		"$drawline" "$drawrect" "$fillrect" "$drawcircle" "$drawroundrect" \
+		"$fillroundrect" "$drawtriangle" "$filltriangle" "$displaybitmap" \
+		"$displayinvertnormal" "$drawbitmapeg" "$scroll" "$text" "$netsource" \
+		>/dev/null 2>&1 &
+}
+
+stop() {
+	pgrep -f "$PROG" | xargs -r kill
+	sleep 1
+	pgrep -f '/usr/sbin/netspeed' | xargs -r kill -9
+	rm -f /tmp/netspeed
+	echo "oled exit..."
+}
+
+restart() {
+	enabled=$(uci -q get oled.@oled[0].enable || echo 0)
+	if pgrep -f "$PROG" >/dev/null; then
+		stop
+		[ "$enabled" -eq 1 ] && sleep 1 && start
+	else
+		[ "$enabled" -eq 1 ] && start
+	fi
+}

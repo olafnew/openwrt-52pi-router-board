@@ -1,0 +1,20 @@
+#!/bin/sh
+
+uci -q set irqbalance.irqbalance.enabled='1'
+uci -q commit irqbalance
+/etc/init.d/irqbalance enable 2>/dev/null || true
+
+uci -q set network.globals.packet_steering='2'
+uci -q commit network
+
+/etc/init.d/cpu-governor enable 2>/dev/null || true
+/etc/init.d/oled enable 2>/dev/null || true
+/etc/init.d/oled-i2c-fix enable 2>/dev/null || true
+/etc/init.d/chronyd enable 2>/dev/null || true
+/etc/init.d/sysntpd disable 2>/dev/null || true
+/etc/init.d/sqm enable 2>/dev/null || true
+
+rm -f /tmp/luci-indexcache
+rm -rf /tmp/luci-*
+
+exit 0
